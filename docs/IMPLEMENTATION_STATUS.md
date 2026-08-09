@@ -100,7 +100,7 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 | OPS-001 | Logs estruturados sem tokens/PII e saúde administrativa | M7 | TESTED | unit/pgTAP | Correlation ID, sanitização, job/failure tables e painel Master validados |
 | OPS-002 | Incidentes de segurança admin-only e procedimento | M7 | TESTED | pgTAP/RLS/docs | Workflow, auditoria, isolamento de moradores e procedimento documentados |
 | OPS-003 | Backup DB/Storage e restauração documentada | M7 | TESTED | restore drill | Scripts e docs; drill local real passou. Restore de staging com Storage real permanece bloqueio externo |
-| OPS-004 | Ambientes development/preview/production separados | M7 | BLOCKED | deployment | Código/validador documentados; criação e credenciais dos projetos externos não estão disponíveis |
+| OPS-004 | Ambientes development/preview/production separados | M7 | BLOCKED | deployment | Projeto Vercel `lastro` criado e vinculado; Supabase hospedado, variáveis por ambiente, deploy e validações externas ainda pendentes |
 | TEST-001 | Personas e suíte unit/integration | M0–M7 | TESTED | Vitest/pgTAP | 10 testes unitários e 110 testes de banco/personas verdes |
 | TEST-002 | Suíte RLS bloqueadora completa | M1–M7 | TESTED | pgTAP/integration | M0–M7 com matriz de anon, pendente, moradores, oficial, case, Master e service_role |
 | TEST-003 | E2E morador completo | M3 | BLOCKED | Playwright hosted | Fluxos/RPC/RLS estão testados; browser exige Google OAuth e projeto Supabase real configurados |
@@ -120,5 +120,5 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 
 - Docker não está instalado neste ambiente; o stack Supabase completo e Storage binário não puderam ser executados localmente. Migrations, seeds e 110 testes pgTAP foram executados em PostgreSQL 16 isolado via WSL.
 - LibreOffice/soffice não está instalado; DOCX passaram por hash e inspeção estrutural, mas não por renderização paginada visual.
-- Testes integrados contra Supabase hospedado, Google OAuth real, envio Resend, Vercel e restore com Storage real exigem projetos e credenciais não presentes; os itens correspondentes estão explicitamente BLOCKED, sem alegação de prontidão produtiva.
+- Projeto Vercel `lastro` existe na conta Hobby e a CLI 58.9.0 está autenticada/vinculada. Testes integrados contra Supabase hospedado, Google OAuth real, envio Resend, deploy Vercel e restore com Storage real ainda exigem projeto/credenciais/configuração; os itens correspondentes permanecem explicitamente BLOCKED, sem alegação de prontidão produtiva.
 - READY FOR PRODUCTION não será usado até todos os requisitos V1 estarem ACCEPTED.

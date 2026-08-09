@@ -42,3 +42,7 @@ yarn-error.log*
 next-env.d.ts
 /.pnpm-store/
 /outputs/
+
+.vercel
+.env*
+!.env.example
