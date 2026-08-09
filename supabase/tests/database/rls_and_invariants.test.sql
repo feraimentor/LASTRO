@@ -9,6 +9,18 @@ select is(
   'all exposed public tables have RLS enabled'
 );
 
+select ok(
+  (select c.relrowsecurity from pg_class c join pg_namespace n on n.oid = c.relnamespace
+    where n.nspname = 'private' and c.relname = 'user_private_data'),
+  'private user data remains protected by deny-by-default RLS'
+);
+
+select ok(
+  not has_table_privilege('anon', 'private.user_private_data', 'SELECT')
+  and not has_table_privilege('authenticated', 'private.user_private_data', 'SELECT'),
+  'client roles have no direct access to private user data'
+);
+
 select is(
   (select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace
     where n.nspname = 'public' and c.relkind = 'v'

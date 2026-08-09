@@ -7,7 +7,7 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 | ID | Requisito | Marco | Status | Teste | Observação |
 |---|---|---:|---|---|---|
 | FOUNDATION-001 | Scaffold Next.js App Router, TypeScript strict e Tailwind | M0 | TESTED | build/typecheck | Next 16.3; build de 39 páginas e typecheck verdes |
-| FOUNDATION-002 | Supabase local, CLI e migrations versionadas | M0 | TESTED | migration smoke/pgTAP | Nove migrations e seeds aplicados do zero em PostgreSQL 16 isolado; 110 testes pgTAP verdes. Stack Supabase completo permanece no CI/Docker |
+| FOUNDATION-002 | Supabase local, CLI e migrations versionadas | M0 | TESTED | migration smoke/pgTAP | Dez migrations e seeds aplicados do zero em PostgreSQL 16 isolado e no projeto hospedado `heideeuesoyiryooadcb`; 112 testes pgTAP verdes |
 | FOUNDATION-003 | Env example, lockfile e dependências fixadas | M0 | TESTED | install frozen | Instalação congelada concluída com pnpm 11.16.0 |
 | FOUNDATION-004 | Tokens visuais LASTRO e UI mobile-first | M0 | TESTED | visual/a11y | Landing e jurídico inspecionados no navegador em desktop e 390px |
 | FOUNDATION-005 | CI com lint, typecheck, unit, build, migration e E2E | M0 | IMPLEMENTED | workflow | Jobs separados de Supabase/migrations, qualidade/build e Playwright/axe implementados; execução remota depende do GitHub |
@@ -92,7 +92,7 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 | IMPORT-007 | Templates CSV/XLSX e documentação sem dados reais | M6 | TESTED | artifact QA | XLSX inspecionado/renderizado em 3 abas; CSV equivalente |
 | NOTIFY-001 | Central interna e preferências essenciais/opcionais | M5 | TESTED | pgTAP/integration | Central, leitura, preferências e eventos essenciais independentes integrados |
 | NOTIFY-002 | EmailProvider isolado, fake dev e Resend produção | M5 | TESTED | provider tests | Fake sem PII em log testado; produção depende de credencial/domínio |
-| SEC-001 | RLS em toda tabela exposta e matriz de personas | M1 | TESTED | pgTAP | 110 testes verdes; todas as tabelas public com RLS, views invoker e funções públicas sem definer |
+| SEC-001 | RLS em toda tabela exposta e matriz de personas | M1 | TESTED | pgTAP/hosted advisor | 112 testes verdes; public sem tabela sem RLS, private user data com RLS deny-by-default, views invoker, sem função pública definer; advisor hospedado sem alerta de segurança |
 | SEC-002 | Projeções comunitárias sem identidade protegida/PII | M1 | TESTED | pgTAP | Views security_invoker; projeção sem UUID de autor/unidade e rótulo neutro validado |
 | SEC-003 | Rate limits configuráveis e constraints anti-duplo clique | M2 | TESTED | pgTAP/integration | Limites server-side por família de ação leem `app_settings`; alteração Master auditada e aplicação imediata validadas |
 | SEC-004 | Headers, CSP, cookies, CSRF, noindex e validação server-side | M7 | IMPLEMENTED | security test | Headers, Proxy SSR, robots, escaping e Zod; teste hospedado pendente |
@@ -100,8 +100,8 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 | OPS-001 | Logs estruturados sem tokens/PII e saúde administrativa | M7 | TESTED | unit/pgTAP | Correlation ID, sanitização, job/failure tables e painel Master validados |
 | OPS-002 | Incidentes de segurança admin-only e procedimento | M7 | TESTED | pgTAP/RLS/docs | Workflow, auditoria, isolamento de moradores e procedimento documentados |
 | OPS-003 | Backup DB/Storage e restauração documentada | M7 | TESTED | restore drill | Scripts e docs; drill local real passou. Restore de staging com Storage real permanece bloqueio externo |
-| OPS-004 | Ambientes development/preview/production separados | M7 | BLOCKED | deployment | Projeto Vercel `lastro` criado e vinculado; Supabase hospedado, variáveis por ambiente, deploy e validações externas ainda pendentes |
-| TEST-001 | Personas e suíte unit/integration | M0–M7 | TESTED | Vitest/pgTAP | 10 testes unitários e 110 testes de banco/personas verdes |
+| OPS-004 | Ambientes development/preview/production separados | M7 | BLOCKED | deployment | Supabase de produção ativo em São Paulo; Vercel `lastro` vinculada e variáveis não pessoais configuradas em Production/Preview. Secret server-side, Master, URL final, OAuth, Resend e deploy ainda pendentes |
+| TEST-001 | Personas e suíte unit/integration | M0–M7 | TESTED | Vitest/pgTAP | 10 testes unitários e 112 testes de banco/personas verdes |
 | TEST-002 | Suíte RLS bloqueadora completa | M1–M7 | TESTED | pgTAP/integration | M0–M7 com matriz de anon, pendente, moradores, oficial, case, Master e service_role |
 | TEST-003 | E2E morador completo | M3 | BLOCKED | Playwright hosted | Fluxos/RPC/RLS estão testados; browser exige Google OAuth e projeto Supabase real configurados |
 | TEST-004 | E2E admin e revogação | M4 | BLOCKED | Playwright hosted | Fluxos/RPC/RLS estão testados; delegação/revogação no browser exige contas Google reais de teste |
@@ -118,7 +118,8 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 
 ## Bloqueios externos conhecidos
 
-- Docker não está instalado neste ambiente; o stack Supabase completo e Storage binário não puderam ser executados localmente. Migrations, seeds e 110 testes pgTAP foram executados em PostgreSQL 16 isolado via WSL.
+- Docker não está instalado neste ambiente; o stack binário local do Storage não foi executado. As dez migrations e seeds foram reproduzidos em PostgreSQL 16 isolado via WSL (112 testes pgTAP) e aplicados com sucesso no Supabase hospedado em `sa-east-1`.
 - LibreOffice/soffice não está instalado; DOCX passaram por hash e inspeção estrutural, mas não por renderização paginada visual.
-- Projeto Vercel `lastro` existe na conta Hobby e a CLI 58.9.0 está autenticada/vinculada. Testes integrados contra Supabase hospedado, Google OAuth real, envio Resend, deploy Vercel e restore com Storage real ainda exigem projeto/credenciais/configuração; os itens correspondentes permanecem explicitamente BLOCKED, sem alegação de prontidão produtiva.
+- O projeto Supabase `LASTRO` (`heideeuesoyiryooadcb`) está saudável, com migrations/seeds sincronizados, zero FK descoberta sem índice de cobertura e advisors sem WARN/ERROR; avisos INFO de RLS sem política são deny-by-default deliberado e índices novos aparecem como não usados enquanto o banco está vazio.
+- Projeto Vercel `lastro` existe na conta Hobby e a CLI 58.9.0 está autenticada/vinculada. Variáveis públicas, limites, timezone, adapter Resend e um `CRON_SECRET` criptograficamente aleatório já estão separados em Production/Preview. Permanecem externos: consentimento/login do painel Supabase para obter secret server-side e configurar Google, autorização do e-mail do Master, domínio/remetente Resend, URL/deploy final, E2E autenticado e restore com Storage real.
 - READY FOR PRODUCTION não será usado até todos os requisitos V1 estarem ACCEPTED.
