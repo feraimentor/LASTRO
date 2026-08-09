@@ -1,0 +1,4 @@
+"use server";
+import {redirect}from"next/navigation";import{z}from"zod";import{requireCommunityUser}from"@/lib/community";import{createClient}from"@/lib/supabase/server";
+export async function requestPrivacyAction(fd:FormData){await requireCommunityUser();const d=z.object({request_type:z.enum(["access","correction","closure","anonymization_blocking_deletion_review","treatment_information","other"]),details:z.string().trim().max(3000).optional()}).parse(Object.fromEntries(fd));const s=await createClient();const{error}=await s.rpc("submit_privacy_request",{p_request_type:d.request_type,p_details:d.details||null});if(error)throw new Error("Não foi possível registrar a solicitação.");redirect("/perfil/privacidade?sent=1")}
+export async function signOutAction(){const s=await createClient();await s.auth.signOut();redirect("/")}

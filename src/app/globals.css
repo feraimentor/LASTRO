@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+:root {
+  --brick: #6b4936;
+  --forest: #3e6652;
+  --forest-soft: #eaf0eb;
+  --sand: #f3eee9;
+  --charcoal: #2e302c;
+  --white: #ffffff;
+  --success: #24613d;
+  --warning: #775600;
+  --danger: #a12d2d;
+  --info: #245a74;
+  --background: #f8f6f3;
+  --foreground: var(--charcoal);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Aptos", "Segoe UI", Arial, sans-serif;
+  --color-brick: var(--brick);
+  --color-forest: var(--forest);
+  --color-forest-soft: var(--forest-soft);
+  --color-sand: var(--sand);
+  --color-charcoal: var(--charcoal);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info: var(--info);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Aptos", "Segoe UI", Arial, sans-serif;
+  line-height: 1.55;
+}
+
+a, button, input, select, textarea { outline-offset: 3px; }
+:focus-visible { outline: 3px solid #245a74; }
+button, input, select, textarea { font: inherit; }
+button, a { touch-action: manipulation; }
+
+.brick-texture {
+  background-color: var(--brick);
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px),
+    linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px);
+  background-size: 52px 18px;
+}
+
+.prose-lastro h1, .prose-lastro h2, .prose-lastro h3, .prose-lastro h4 {
+  color: var(--charcoal);
+  line-height: 1.2;
+  scroll-margin-top: 2rem;
+}
+.prose-lastro h1 { font-size: clamp(1.8rem, 5vw, 2.7rem); margin-bottom: 1.25rem; }
+.prose-lastro h2 { font-size: 1.55rem; margin: 2rem 0 .75rem; }
+.prose-lastro h3 { font-size: 1.2rem; margin: 1.75rem 0 .6rem; color: var(--forest); }
+.prose-lastro h4 { font-size: 1rem; margin: 1.25rem 0 .5rem; }
+.prose-lastro p { margin: 0 0 1rem; }
+.prose-lastro ul { list-style: disc; padding-left: 1.4rem; margin-bottom: 1rem; }
+.prose-lastro li { margin: .35rem 0; }
+.prose-lastro a { color: var(--info); text-decoration: underline; overflow-wrap: anywhere; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}

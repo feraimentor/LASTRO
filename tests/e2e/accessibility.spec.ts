@@ -1,0 +1,2 @@
+import AxeBuilder from"@axe-core/playwright";import{expect,test}from"@playwright/test";
+for(const target of[{path:"/",name:"landing"},{path:"/legal",name:"jurídico"}])test(`${target.name} sem violações axe WCAG AA`,async({page})=>{await page.goto(target.path);const results=await new AxeBuilder({page}).withTags(["wcag2a","wcag2aa","wcag21aa","wcag22aa"]).analyze();expect(results.violations).toEqual([]);await page.keyboard.press("Tab");await expect(page.locator(":focus")).toBeVisible()});

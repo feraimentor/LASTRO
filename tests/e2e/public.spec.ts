@@ -1,0 +1,1 @@
+import{test,expect}from"@playwright/test";test("landing and legal routes are public",async({page})=>{await page.goto("/");await expect(page.getByRole("heading",{name:/memória comunitária/i})).toBeVisible();await page.goto("/legal");await expect(page.getByRole("heading",{name:/documentos jurídicos/i})).toBeVisible()});

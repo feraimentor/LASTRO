@@ -1,0 +1,3 @@
+"use server";
+import{revalidatePath}from"next/cache";import{z}from"zod";import{requirePermission}from"@/lib/community";import{createClient}from"@/lib/supabase/server";
+export async function updateSettingAction(formData:FormData){await requirePermission("settings.manage");const data=z.object({key:z.string().min(2).max(100),value:z.string().min(1).max(1000),reason:z.string().trim().min(5).max(1000)}).parse(Object.fromEntries(formData));let value:unknown;try{value=JSON.parse(data.value)}catch{throw new Error("O valor precisa ser JSON válido.")}const s=await createClient();const{error}=await s.rpc("update_app_setting",{p_key:data.key,p_value:value,p_reason:data.reason});if(error)throw new Error(error.message);revalidatePath("/admin/configuracoes")}
