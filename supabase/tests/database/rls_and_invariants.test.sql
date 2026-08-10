@@ -55,7 +55,8 @@ insert into auth.users(id,email) values
   ('10000000-0000-0000-0000-000000000003','pending@example.invalid'),
   ('10000000-0000-0000-0000-000000000004','master@example.invalid'),
   ('10000000-0000-0000-0000-000000000005','official@example.invalid'),
-  ('10000000-0000-0000-0000-000000000006','case.participant@example.invalid');
+  ('10000000-0000-0000-0000-000000000006','case.participant@example.invalid'),
+  ('10000000-0000-0000-0000-000000000007','bootstrap.member@example.invalid');
 
 insert into auth.sessions(id,user_id,created_at) values
   ('30000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000004',now());
@@ -66,7 +67,8 @@ insert into public.profiles(id,first_name,last_name,display_name,public_identity
   ('10000000-0000-0000-0000-000000000003','Pessoa','Pendente','Pessoa Pendente','protected','pending_verification','tenant',true),
   ('10000000-0000-0000-0000-000000000004','Pessoa','Master','Pessoa Master','protected','active','resident_owner',true),
   ('10000000-0000-0000-0000-000000000005','Conta','Oficial','Conta Oficial','identified','official','authorized_resident',false),
-  ('10000000-0000-0000-0000-000000000006','Parte','Convidada','Parte Convidada','protected','case_restricted','authorized_resident',false);
+  ('10000000-0000-0000-0000-000000000006','Parte','Convidada','Parte Convidada','protected','case_restricted','authorized_resident',false),
+  ('10000000-0000-0000-0000-000000000007','Pessoa','Bootstrap','Pessoa Bootstrap','protected','pending_verification','resident_owner',true);
 
 insert into private.user_private_data(user_id,google_email)
 select id,lower(email) from auth.users;
@@ -84,12 +86,18 @@ insert into public.resident_unit_links(user_id,unit_id,relation_type,verificatio
 insert into public.user_legal_acceptances(user_id,document_version_id,accepted_hash_sha256)
 select u.id,v.id,v.content_hash_sha256
 from auth.users u cross join public.legal_document_versions v
-where u.id in ('10000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000005','10000000-0000-0000-0000-000000000006')
+where u.id in ('10000000-0000-0000-0000-000000000001','10000000-0000-0000-0000-000000000002','10000000-0000-0000-0000-000000000004','10000000-0000-0000-0000-000000000005','10000000-0000-0000-0000-000000000006','10000000-0000-0000-0000-000000000007')
   and v.is_current and v.state='published';
 
 insert into public.user_roles(user_id,role_id,granted_by)
 select '10000000-0000-0000-0000-000000000004', id, '10000000-0000-0000-0000-000000000004'
 from public.roles where slug='master';
+
+insert into public.verification_requests(
+  id,user_id,requested_block_id,requested_unit_label,relation_type,currently_resides,state
+) values (
+  '50000000-0000-0000-0000-000000000007','10000000-0000-0000-0000-000000000007',10,'01','resident_owner',true,'pending'
+);
 
 insert into public.official_representations(id,user_id,role_type,organization,starts_at,status,verified_by,verified_at)
 values('40000000-0000-0000-0000-000000000005','10000000-0000-0000-0000-000000000005','administrator','Organização fictícia',now()-interval '1 day','active','10000000-0000-0000-0000-000000000004',now());
@@ -300,6 +308,14 @@ select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000004'
 select set_config('request.jwt.claims','{"sub":"10000000-0000-0000-0000-000000000004","session_id":"30000000-0000-0000-0000-000000000004"}',true);
 select ok(public.current_user_has_permission('admins.manage'), 'master receives mapped permission');
 select ok(public.current_session_is_recent(), 'fresh authenticated session satisfies reauthentication gate');
+select lives_ok(
+  $$select public.review_verification_request('50000000-0000-0000-0000-000000000007','approved','Bootstrap fictício auditado')$$,
+  'master can create and match a missing catalog unit while approving a verification'
+);
+select is((select count(*) from public.condo_units where block_id=10 and normalized_label='01'),1::bigint,'bootstrap approval creates the missing unit exactly once');
+select is((select state::text from public.verification_requests where id='50000000-0000-0000-0000-000000000007'),'approved','bootstrap verification is approved');
+select is((select access_state::text from public.profiles where id='10000000-0000-0000-0000-000000000007'),'active','approved bootstrap member becomes active');
+select is((select count(*) from public.audit_logs where action='unit.created' and target_id=(select id from public.condo_units where block_id=10 and normalized_label='01')),1::bigint,'automatic unit creation is audited');
 select lives_ok(
   $$select public.set_user_role('10000000-0000-0000-0000-000000000002','moderator','grant','Concessão fictícia de teste')$$,
   'master can grant a lower role after recent authentication'

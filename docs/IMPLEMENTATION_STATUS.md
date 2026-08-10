@@ -7,7 +7,7 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 | ID | Requisito | Marco | Status | Teste | Observação |
 |---|---|---:|---|---|---|
 | FOUNDATION-001 | Scaffold Next.js App Router, TypeScript strict e Tailwind | M0 | TESTED | build/typecheck | Next 16.3; build de 39 páginas e typecheck verdes |
-| FOUNDATION-002 | Supabase local, CLI e migrations versionadas | M0 | TESTED | migration smoke/pgTAP | Dez migrations e seeds aplicados do zero em PostgreSQL 16 isolado e no projeto hospedado `heideeuesoyiryooadcb`; 112 testes pgTAP verdes |
+| FOUNDATION-002 | Supabase local, CLI e migrations versionadas | M0 | TESTED | migration smoke/pgTAP | Dez migrations-base e seeds reproduzidos com 112 testes pgTAP; migration 11 de bootstrap validada transacionalmente no Preview e aplicada em Production `heideeuesoyiryooadcb` |
 | FOUNDATION-003 | Env example, lockfile e dependências fixadas | M0 | TESTED | install frozen | Instalação congelada concluída com pnpm 11.16.0 |
 | FOUNDATION-004 | Tokens visuais LASTRO e UI mobile-first | M0 | TESTED | visual/a11y | Landing e jurídico inspecionados no navegador em desktop e 390px |
 | FOUNDATION-005 | CI com lint, typecheck, unit, build, migration e E2E | M0 | IMPLEMENTED | workflow | Jobs separados de Supabase/migrations, qualidade/build e Playwright/axe implementados; execução remota depende do GitHub |
@@ -27,9 +27,9 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 | PROFILE-001 | Perfil completo e preferências | M1 | IMPLEMENTED | integration | Onboarding de perfil e área pessoal implementados |
 | PROFILE-002 | PII separada e não exposta | M1 | TESTED | pgTAP/RLS | Schema private e projeção comunitária sem UUID/PII validados com duas personas |
 | UNIT-001 | Blocos 1–14 e catálogo administrável de unidades | M1 | IMPLEMENTED | seed/integration | Seed 1–14, catálogo e tela administrativa |
-| VERIFY-001 | Verificação manual com estados e trilha | M1 | TESTED | pgTAP/integration | RPC atômica de solicitação/decisão, cinco estados congelados e fila administrativa |
+| VERIFY-001 | Verificação manual com estados e trilha | M1 | TESTED | pgTAP/integration | RPC atômica de solicitação/decisão, cinco estados congelados e fila administrativa; aprovação cria/matcheia unidade ausente apenas com `units.manage` e audita ambas as operações |
 | VERIFY-002 | Encerramento de vínculo preserva autoria e acesso mínimo | M1 | TESTED | pgTAP/RLS | RPC encerra vínculo, muda acesso para link_ended e preserva os reports/autoria |
-| MASTER-001 | Bootstrap único do Master por ambiente e UUID | M1 | TESTED | hosted integration/audit | Bootstrap real validado em Production e Preview: cada ambiente tem um Master ativo, uma correspondência literal autorizada e um evento de auditoria |
+| MASTER-001 | Bootstrap único do Master por ambiente e UUID | M1 | TESTED | hosted integration/audit | Bootstrap real validado em Production e Preview; guard administrativo separado do acesso comunitário permite ao Master com aceite/perfil completos resolver a primeira verificação sem liberar conteúdo comunitário |
 | MASTER-002 | Poderes Master completos via permissões | M4 | TESTED | pgTAP/integration | Vínculos, suspensão, RBAC, jurídico, moderação, importação, configurações, incidentes e recovery integrados |
 | MASTER-003 | Guard técnico do último Master | M1 | TESTED | pgTAP | Trigger impede revogação do último Master ativo |
 | RBAC-001 | Roles, permissions, mappings, user roles e overrides | M1 | IMPLEMENTED | DB/RLS | Schema, seed e helper de decisão atual implementados |
@@ -101,9 +101,9 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 | OPS-002 | Incidentes de segurança admin-only e procedimento | M7 | TESTED | pgTAP/RLS/docs | Workflow, auditoria, isolamento de moradores e procedimento documentados |
 | OPS-003 | Backup DB/Storage e restauração documentada | M7 | TESTED | restore drill | Scripts e docs; drill local real passou. Restore de staging com Storage real permanece bloqueio externo |
 | OPS-004 | Ambientes development/preview/production separados | M7 | BLOCKED | deployment | Supabase Production e Preview isolados em São Paulo, com migrations/seeds/RLS e Google OAuth; Vercel Production redeployado e Preview real criado. Domínio/EMAIL_FROM, envio real, hosted E2E integral e restore hospedado ainda pendentes |
-| TEST-001 | Personas e suíte unit/integration | M0–M7 | TESTED | Vitest/pgTAP | 10 testes unitários e 112 testes de banco/personas verdes |
+| TEST-001 | Personas e suíte unit/integration | M0–M7 | TESTED | Vitest/pgTAP | 14 testes unitários verdes; suíte-base de 112 testes de banco/personas e teste transacional hospedado do bootstrap verdes |
 | TEST-002 | Suíte RLS bloqueadora completa | M1–M7 | TESTED | pgTAP/integration | M0–M7 com matriz de anon, pendente, moradores, oficial, case, Master e service_role |
-| TEST-003 | E2E morador completo | M3 | BLOCKED | Playwright hosted | Login Google e roteamento ao portão jurídico passaram em Production; aceite jurídico deve ser feito pelo próprio usuário antes de concluir perfil, vínculo e verificação |
+| TEST-003 | E2E morador completo | M3 | TESTED | browser hosted | Jornada Google real concluída em Production: aceite jurídico pelo titular, perfil, solicitação de unidade, verificação auditada e acesso ao dashboard comunitário |
 | TEST-004 | E2E admin e revogação | M4 | BLOCKED | Playwright hosted | Fluxos/RPC/RLS estão testados; delegação/revogação no browser exige contas Google reais de teste |
 | TEST-005 | E2E histórico | M6 | TESTED | pgTAP/integration | Jornada integral de lote a publicação/associação e KPI passou no banco; browser autenticado externo pendente |
 | TEST-006 | Testes jurídicos de aceite/hash/imutabilidade/reaceite | M1 | TESTED | pgTAP/DB | Três aceites vigentes, imutabilidade, sessão recente e hashes canônicos validados |
@@ -118,7 +118,7 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 
 ## Bloqueios externos conhecidos
 
-- Docker não está instalado neste ambiente; o stack binário local do Storage não foi executado. As dez migrations e seeds foram reproduzidos em PostgreSQL 16 isolado via WSL (112 testes pgTAP) e aplicados com sucesso no Supabase hospedado em `sa-east-1`.
+- Docker não está instalado neste ambiente; o stack binário local do Storage não foi executado. As dez migrations-base e seeds foram reproduzidos em PostgreSQL 16 isolado via WSL (112 testes pgTAP); a migration 11 foi validada com transação revertida no Supabase Preview e aplicada com sucesso em Preview e Production `sa-east-1`.
 - LibreOffice/soffice não está instalado; DOCX passaram por hash e inspeção estrutural, mas não por renderização paginada visual.
 - O projeto Supabase `LASTRO` (`heideeuesoyiryooadcb`) está saudável, com migrations/seeds sincronizados, zero FK descoberta sem índice de cobertura e advisors sem WARN/ERROR; avisos INFO de RLS sem política são deny-by-default deliberado e índices novos aparecem como não usados enquanto o banco está vazio.
 - Projeto Vercel `lastro` existe na conta Hobby e a CLI 58.9.0 está autenticada/vinculada. Production foi redeployado e aliasado em `https://lastro-five.vercel.app`; rotas públicas retornam 200, headers de segurança estão presentes e o cron rejeita chamada anônima com 401. `MASTER_BOOTSTRAP_EMAIL`, chaves Supabase modernas separadas, `RESEND_API_KEY` e `CRON_SECRET` estão sensíveis. A chave Supabase transitória exposta durante a configuração foi revogada antes de uso.
