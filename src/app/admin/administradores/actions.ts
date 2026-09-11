@@ -24,6 +24,7 @@ export async function setUserRoleAction(formData: FormData) {
   });
   if (error) throw new Error(error.message === "recent_authentication_required" ? "Confirme novamente sua conta Google antes desta operação." : error.message);
   revalidatePath("/admin/administradores");
+  revalidatePath("/admin/usuarios");
 }
 
 const permissionSchema = z.object({
@@ -45,4 +46,5 @@ export async function setPermissionOverrideAction(formData: FormData) {
   });
   if (error) throw new Error(error.message === "recent_authentication_required" ? "Confirme novamente sua conta Google antes desta operação." : error.message);
   revalidatePath("/admin/administradores");
+  revalidatePath("/admin/usuarios");
 }

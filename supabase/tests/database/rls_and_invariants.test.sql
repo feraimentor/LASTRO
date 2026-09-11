@@ -47,6 +47,8 @@ select ok(
 
 select ok(not has_function_privilege('anon', 'public.create_report(jsonb)', 'EXECUTE'), 'anon cannot execute report creation');
 select ok(has_function_privilege('authenticated', 'public.create_report(jsonb)', 'EXECUTE'), 'authenticated role can execute report creation');
+select ok(not has_function_privilege('anon', 'public.admin_search_users(text,integer)', 'EXECUTE'), 'anon cannot execute the administrative user directory');
+select ok(has_function_privilege('authenticated', 'public.admin_search_users(text,integer)', 'EXECUTE'), 'authenticated role can reach the permission-gated user directory');
 select ok(not exists(select 1 from information_schema.columns where table_schema='public' and table_name='community_reports' and column_name in ('author_user_id','affected_unit_id')), 'community projection omits author and unit UUIDs');
 
 insert into auth.users(id,email) values
@@ -101,6 +103,53 @@ insert into public.verification_requests(
 
 insert into public.official_representations(id,user_id,role_type,organization,starts_at,status,verified_by,verified_at)
 values('40000000-0000-0000-0000-000000000005','10000000-0000-0000-0000-000000000005','administrator','Organização fictícia',now()-interval '1 day','active','10000000-0000-0000-0000-000000000004',now());
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000003',true);
+select throws_ok(
+  $$select * from public.admin_search_users('Pessoa Master',50)$$,
+  'P0001','permission_denied','ordinary authenticated users cannot search the administrative directory'
+);
+reset role;
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000004',true);
+select is(
+  (select count(*) from public.admin_search_users('master@example.invalid',50)),
+  1::bigint,
+  'Master searches users by private email'
+);
+select is(
+  (select user_id from public.admin_search_users('Pessoa Master',50)),
+  '10000000-0000-0000-0000-000000000004'::uuid,
+  'Master searches users by name and receives the full UUID'
+);
+select is(
+  (select count(*) from public.admin_search_users('Bloco 4',50)),
+  1::bigint,
+  'Master searches users by current block'
+);
+select is(
+  (select count(*) from public.admin_search_users('404',50)),
+  1::bigint,
+  'Master searches users by current unit'
+);
+select is(
+  (select count(*) from public.admin_search_users('10000000-0000-0000-0000-000000000005',50)),
+  1::bigint,
+  'Master searches users by full UUID'
+);
+select is(
+  (select onboarding_step from public.admin_search_users('master@example.invalid',50)),
+  'complete'::text,
+  'directory reports the current onboarding state'
+);
+select ok(
+  (select 'admins.manage'=any(permission_slugs) and 'private_data.view'=any(permission_slugs)
+     from public.admin_search_users('master@example.invalid',50)),
+  'directory reports effective permissions'
+);
+reset role;
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub','10000000-0000-0000-0000-000000000001',true);

@@ -12,6 +12,7 @@ export async function endLinkAction(formData: FormData) {
   const { error } = await supabase.rpc("end_resident_link", { p_link_id: data.link_id, p_reason: data.reason });
   if (error) throw new Error(error.message);
   revalidatePath("/admin/moradores");
+  revalidatePath("/admin/usuarios");
 }
 
 export async function setSuspensionAction(formData: FormData) {
@@ -21,4 +22,5 @@ export async function setSuspensionAction(formData: FormData) {
   const { error } = await supabase.rpc("set_user_suspension", { p_target_user_id: data.target_user_id, p_suspend: data.suspend === "true", p_reason: data.reason });
   if (error) throw new Error(error.message === "recent_authentication_required" ? "Confirme novamente sua conta Google antes desta operação." : error.message);
   revalidatePath("/admin/moradores");
+  revalidatePath("/admin/usuarios");
 }

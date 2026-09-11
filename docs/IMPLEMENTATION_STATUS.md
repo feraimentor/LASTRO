@@ -1,13 +1,13 @@
 # Status de implementação — LASTRO V1
 
-Atualizado em 2026-08-09. Greenfield. Este ledger não pode ter linhas removidas para ocultar pendências.
+Atualizado em 2026-09-11. Greenfield. Este ledger não pode ter linhas removidas para ocultar pendências.
 
 Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCEPTED, DEFERRED TO V1.1, BACKLOG.
 
 | ID | Requisito | Marco | Status | Teste | Observação |
 |---|---|---:|---|---|---|
 | FOUNDATION-001 | Scaffold Next.js App Router, TypeScript strict e Tailwind | M0 | TESTED | build/typecheck | Next 16.3; build de 39 páginas e typecheck verdes |
-| FOUNDATION-002 | Supabase local, CLI e migrations versionadas | M0 | TESTED | migration smoke/pgTAP | Dez migrations-base e seeds reproduzidos com 112 testes pgTAP; migration 11 de bootstrap validada transacionalmente no Preview e aplicada em Production `heideeuesoyiryooadcb` |
+| FOUNDATION-002 | Supabase local, CLI e migrations versionadas | M0 | TESTED | migration smoke/pgTAP | Dez migrations-base e seeds reproduzidos com 112 testes pgTAP; migrations 11 de bootstrap e 12 do diretório administrativo aplicadas em Production `heideeuesoyiryooadcb` |
 | FOUNDATION-003 | Env example, lockfile e dependências fixadas | M0 | TESTED | install frozen | Instalação congelada concluída com pnpm 11.16.0 |
 | FOUNDATION-004 | Tokens visuais LASTRO e UI mobile-first | M0 | TESTED | visual/a11y | Landing e jurídico inspecionados no navegador em desktop e 390px |
 | FOUNDATION-005 | CI com lint, typecheck, unit, build, migration e E2E | M0 | IMPLEMENTED | workflow | Jobs separados de Supabase/migrations, qualidade/build e Playwright/axe implementados; execução remota depende do GitHub |
@@ -37,6 +37,7 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 | RBAC-003 | Autoelevação e alteração de nível superior proibidas | M1 | IMPLEMENTED | DB/integration | Sem grants de mutação ao cliente; operações privilegiadas isoladas |
 | RBAC-004 | Revogação preserva usuário e histórico | M1 | IMPLEMENTED | DB | Modelo usa revoked_at sem deleção de usuário |
 | RBAC-005 | Reautenticação em operações críticas | M1 | TESTED | pgTAP/integration | Sessão Supabase criada há no máximo 15 min exigida em RBAC, suspensão e publicação jurídica; UI reabre Google |
+| RBAC-006 | Diretório administrativo pesquisável de usuários | M4 | TESTED | hosted integration/app gates | `/admin/usuarios` busca nome, e-mail, bloco, unidade ou UUID e exibe onboarding, acesso, vínculo, papéis e permissões; RPC exige simultaneamente `admins.manage` e `private_data.view`, com cobertura pgTAP adicionada |
 | TAX-001 | Seis tipos de registro configuráveis | M2 | IMPLEMENTED | seed | Seed completo |
 | TAX-002 | Categorias, subcategorias, aliases e sugestões configuráveis | M2 | IMPLEMENTED | seed/integration | Taxonomia V1 completa e tela de consulta admin |
 | TAX-003 | Outros exige sugestão sem bloquear publicação | M2 | IMPLEMENTED | form/integration | Validado na RPC transacional |
@@ -120,8 +121,9 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 
 - Docker não está instalado neste ambiente; o stack binário local do Storage não foi executado. As dez migrations-base e seeds foram reproduzidos em PostgreSQL 16 isolado via WSL (112 testes pgTAP); a migration 11 foi validada com transação revertida no Supabase Preview e aplicada com sucesso em Preview e Production `sa-east-1`.
 - LibreOffice/soffice não está instalado; DOCX passaram por hash e inspeção estrutural, mas não por renderização paginada visual.
-- O projeto Supabase `LASTRO` (`heideeuesoyiryooadcb`) está saudável, com migrations/seeds sincronizados, zero FK descoberta sem índice de cobertura e advisors sem WARN/ERROR; avisos INFO de RLS sem política são deny-by-default deliberado e índices novos aparecem como não usados enquanto o banco está vazio.
-- Projeto Vercel `lastro` existe na conta Hobby e a CLI 58.9.0 está autenticada/vinculada. Production foi redeployado e aliasado em `https://lastro-five.vercel.app`; rotas públicas retornam 200, headers de segurança estão presentes e o cron rejeita chamada anônima com 401. `MASTER_BOOTSTRAP_EMAIL`, chaves Supabase modernas separadas, `RESEND_API_KEY` e `CRON_SECRET` estão sensíveis. A chave Supabase transitória exposta durante a configuração foi revogada antes de uso.
-- Supabase Production `heideeuesoyiryooadcb` e Preview `iyrmkcuuxhxovsbkcatq` estão saudáveis em `sa-east-1`, com as dez migrations, seeds, RLS e Google OAuth sincronizados. O Preview Vercel estável é `https://lastro-preview.vercel.app`, com callback exato e wildcard restrito à conta autorizados. Login Google real nos dois ambientes criou o usuário autorizado, concedeu o único Master por UUID e gravou a auditoria; os navegadores ficaram no portão de três aceites jurídicos, que não foram aceitos pelo agente. Chaves Preview transitórias foram revogadas após a rotação final.
-- A conta Resend e sua chave estão configuradas, mas envio produtivo continua bloqueado até o usuário autorizar a compra de um domínio específico, concluir DNS/verificação e definir `EMAIL_FROM`. Também permanecem externos: E2E autenticado após aceite jurídico, teste de envio real, Storage hospedado e restore completo do ambiente de staging. O site continua com `noindex`, sem alegação de lançamento produtivo.
+- O projeto Supabase Production `LASTRO` (`heideeuesoyiryooadcb`) está `ACTIVE_HEALTHY`, com doze migrations sincronizadas. O diretório administrativo foi validado em transação hospedada e aplicado em produção. O advisor de segurança mantém apenas INFOs de tabelas RLS deny-by-default e um WARN genérico de proteção contra senhas vazadas; este último tem baixa relevância operacional para o fluxo V1, que aceita somente Google OAuth, mas a configuração do provedor por senha deve ser reconfirmada no gate final.
+- Projeto Vercel `lastro` permanece vinculado à conta Hobby. Em 2026-09-10, `https://lastro-five.vercel.app`, `/login` e o redirecionamento anônimo de `/dashboard` responderam 200. O subdomínio HTTPS gratuito já atende ao Google OAuth; trocar de hospedagem ou de autenticação não é requisito para continuar.
+- Supabase Preview `iyrmkcuuxhxovsbkcatq` está `INACTIVE` por inatividade no plano gratuito e deve ser reativado somente durante o restore/E2E final para economizar recursos. O Preview Vercel estável continua em `https://lastro-preview.vercel.app`. Produção e Preview têm projetos, chaves e callbacks separados; o login Google real e o bootstrap único do Master já foram validados.
+- Revisão econômica de 2026-09-10: manter Next.js 16 na Vercel é a rota de menor risco e custo. Cloudflare poderia fornecer `*.workers.dev`, mas a rota recomendada para Next.js 16 usa `vinext` ainda beta e exigiria nova validação de compatibilidade e todos os gates hospedados; além disso, um domínio compartilhado `workers.dev` não pode ser verificado como remetente no Resend.
+- A conta Resend e sua chave estão configuradas, mas envio produtivo para terceiros continua bloqueado até existir domínio próprio, DNS/verificação e `EMAIL_FROM`. Também permanecem externos: teste de envio real, Storage hospedado, restore completo no Preview reativado, E2E administrativo com contas Google adicionais e mobile/axe nas jornadas privadas. O site continua com `noindex`, sem alegação de lançamento produtivo.
 - READY FOR PRODUCTION não será usado até todos os requisitos V1 estarem ACCEPTED.
