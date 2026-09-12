@@ -6,7 +6,7 @@ Use projetos Supabase e variáveis independentes para `development`, `preview/st
 
 Antes do deploy, execute `pnpm release:env`, `pnpm check`, o job `database` e a suíte E2E do CI. Configure Google OAuth com o callback HTTPS do ambiente, `EMAIL_PROVIDER=resend`, domínio/remetente verificado, cron com `CRON_SECRET`, bucket privado e políticas jurídicas vigentes. O primeiro Master nasce somente após login Google real correspondente a `MASTER_BOOTSTRAP_EMAIL`.
 
-`vercel.json` agenda a atualização de compromissos às 03:00 UTC (00:00 em America/Sao_Paulo fora do horário de verão) e a drenagem de e-mails às 12:00 UTC (09:00). Os handlers aceitam o `GET` enviado pelo Vercel Cron, validam `Authorization: Bearer $CRON_SECRET` e preservam `POST` somente para reexecução operacional autenticada. O agendamento diário é compatível com Hobby; reduza o intervalo apenas depois de confirmar um plano que aceite frequências maiores.
+`wrangler.jsonc` agenda a atualização de compromissos às 03:00 UTC (00:00 em America/Sao_Paulo fora do horário de verão) e a drenagem de e-mails às 12:00 UTC (09:00). O handler agendado do Worker envia `POST` interno com `Authorization: Bearer $CRON_SECRET`; os endpoints preservam `GET` e `POST` para diagnóstico e reexecução operacional autenticada. O deploy usa `pnpm build:cloudflare` e `wrangler deploy`, com secrets mantidos fora do Git.
 
 ## Backup independente do PostgreSQL
 

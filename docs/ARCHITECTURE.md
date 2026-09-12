@@ -4,7 +4,7 @@
 
 LASTRO é uma aplicação Next.js App Router full-stack. React Server Components realizam leitura inicial; Server Actions e Route Handlers validam entrada com Zod, confirmam identidade no servidor e executam operações transacionais no Supabase. Componentes cliente ficam restritos à interação real.
 
-O Supabase fornece Google Auth, PostgreSQL e Storage privado. Vercel hospeda a aplicação e pode acionar o endpoint cron protegido; a regra de vencimento permanece idempotente e independente do scheduler.
+O Supabase fornece Google Auth, PostgreSQL e Storage privado. Cloudflare Workers hospeda o bundle Next.js gerado pelo OpenNext e aciona os endpoints cron protegidos; a regra de vencimento permanece idempotente e independente do scheduler.
 
 ## Limites de confiança
 

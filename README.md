@@ -36,6 +36,8 @@ Não use `SUPABASE_SECRET_KEY` no navegador. O primeiro Master só é concedido 
 | `pnpm storage:inventory` | inventário autenticado dos buckets |
 | `pnpm release:env` | valida variáveis mínimas de produção |
 | `pnpm build` | build de produção |
+| `pnpm build:cloudflare` | gera o Worker via OpenNext |
+| `pnpm deploy:cloudflare` | gera e publica o Worker |
 | `pnpm check` | lint + tipos + unit + build |
 
 ## Estrutura
@@ -54,6 +56,8 @@ Não use `SUPABASE_SECRET_KEY` no navegador. O primeiro Master só é concedido 
 
 Rotas comunitárias exigem usuário autenticado, três aceites vigentes, perfil completo, vínculo aprovado e acesso ativo. Rotas administrativas revalidam permissão granular no banco. Views comunitárias usam `security_invoker`; PII fica fora da projeção comunitária. Evidências ficam no bucket privado `evidence`, com path sem PII e autorização relacional.
 
-Os endpoints `GET|POST /api/cron/commitments` e `GET|POST /api/cron/notifications` exigem `Authorization: Bearer $CRON_SECRET`, geram correlation ID e registram resultado sanitizado. `vercel.json` agenda ambos diariamente em UTC, configuração compatível inclusive com o plano Hobby; em produção, o adapter de e-mail exige `EMAIL_PROVIDER=resend`, chave e remetente verificado.
+Os endpoints `GET|POST /api/cron/commitments` e `GET|POST /api/cron/notifications` exigem `Authorization: Bearer $CRON_SECRET`, geram correlation ID e registram resultado sanitizado. `wrangler.jsonc` agenda ambos diariamente em UTC no Cloudflare Workers; em produção, o adapter de e-mail exige `EMAIL_PROVIDER=resend`, chave e remetente verificado.
+
+O ambiente produtivo está em `https://lastro.feraimentor.workers.dev`. Variáveis públicas ficam em `wrangler.jsonc`; `SUPABASE_SECRET_KEY`, `MASTER_BOOTSTRAP_EMAIL`, `CRON_SECRET`, `RESEND_API_KEY` e demais credenciais devem ser gravadas somente como secrets do Worker.
 
 Consulte `docs/DEPLOYMENT_AND_RECOVERY.md` antes de preview ou produção. Este repositório não deve ser considerado pronto para produção enquanto houver itens V1 sem estado `ACCEPTED` no ledger.

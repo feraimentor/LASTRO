@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src tests scripts next.config.ts playwright.config.ts vitest.config.mts --max-warnings=0",
+    "lint": "eslint src tests scripts cloudflare-worker.ts open-next.config.ts next.config.ts playwright.config.ts vitest.config.mts --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -21,10 +21,15 @@
     "legal:verify": "tsx scripts/verify-legal-docs.ts",
     "storage:inventory": "node scripts/storage-inventory.mjs",
     "release:env": "node scripts/check-release-env.mjs",
+    "build:cloudflare": "opennextjs-cloudflare build",
+    "preview:cloudflare": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy:cloudflare": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
   },
   "dependencies": {
     "@hookform/resolvers": "5.7.1",
+    "@opennextjs/cloudflare": "1.20.6",
     "@supabase/ssr": "0.12.4",
     "@supabase/supabase-js": "2.112.2",
     "clsx": "2.1.1",
@@ -56,8 +61,8 @@
     "tailwindcss": "4.3.3",
     "tsx": "4.23.11",
     "typescript": "5.9.3",
-    "vercel": "58.9.0",
-    "vitest": "4.1.10"
+    "vitest": "4.1.10",
+    "wrangler": "4.131.1"
   },
   "packageManager": "pnpm@11.16.0"
 }

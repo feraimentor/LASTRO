@@ -13,6 +13,6 @@ export async function POST(request:NextRequest){
   const updated=Number(data??0);await supabase.rpc("record_job_result",{p_job_name:"commitment_deadlines",p_status:"succeeded",p_attempted:updated,p_succeeded:updated,p_error_code:null,p_correlation_id:requestId,p_started_at:startedAt});logEvent("info",{correlationId:requestId,route,operation:"mark_overdue",metadata:{updated}});return respond({updated});
 }
 
-// Vercel Cron invokes configured paths with GET. Keep POST available for
-// authenticated operational replays from a trusted runner.
+// Cloudflare invokes POST through the custom scheduled handler. Keep GET
+// available for authenticated operational replays from a trusted runner.
 export const GET = POST;
