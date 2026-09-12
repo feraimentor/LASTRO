@@ -2,6 +2,8 @@
   "name": "lastro",
   "version": "0.1.0",
   "private": true,
+  "author": "Bruno Moreira",
+  "license": "UNLICENSED",
   "engines": {
     "node": "22.x"
   },

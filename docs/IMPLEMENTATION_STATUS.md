@@ -11,7 +11,7 @@ Estados permitidos: NOT STARTED, IN PROGRESS, BLOCKED, IMPLEMENTED, TESTED, ACCE
 | FOUNDATION-003 | Env example, lockfile e dependências fixadas | M0 | TESTED | install frozen | Instalação congelada concluída com pnpm 11.16.0 |
 | FOUNDATION-004 | Tokens visuais LASTRO e UI mobile-first | M0 | TESTED | visual/a11y | Landing e jurídico inspecionados no navegador em desktop e 390px |
 | FOUNDATION-005 | CI com lint, typecheck, unit, build, migration e E2E | M0 | IMPLEMENTED | workflow | Jobs separados de Supabase/migrations, qualidade/build e Playwright/axe implementados; execução remota depende do GitHub |
-| DOC-001 | README e documentação técnica obrigatória | M0 | IMPLEMENTED | docs inventory | README e nove documentos técnicos versionados |
+| DOC-001 | README e documentação técnica obrigatória | M0 | IMPLEMENTED | docs inventory | README, documentação oficial, manuais, base de conhecimento e documentos técnicos versionados; licença proprietária e política de segurança públicas |
 | DOC-002 | Ledger integral e sincronizado | M0 | IMPLEMENTED | manual | Este arquivo |
 | AUTH-001 | Login exclusivo Google via Supabase Auth | M1 | TESTED | hosted OAuth | Cliente Google Web configurado; login Master real no Cloudflare Production retornou ao dashboard em 2026-09-12 |
 | AUTH-002 | Autenticação separada de autorização condominial | M1 | IMPLEMENTED | RLS/personas | Login, aceite, perfil, vínculo e acesso são estados distintos |

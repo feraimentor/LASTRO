@@ -1,0 +1,36 @@
+name: Relatar defeito
+description: Informe um comportamento incorreto sem expor dados pessoais.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Não inclua e-mail, UUID, unidade, conteúdo real, token, código ou URL assinada. Vulnerabilidades devem usar Security Advisories.
+  - type: textarea
+    id: description
+    attributes:
+      label: O que aconteceu?
+      description: Descreva o comportamento observado e o esperado.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      description: Use somente dados fictícios e remova parâmetros sensíveis.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Ambiente
+      description: Navegador, sistema e aparelho, sem identificadores pessoais.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Confirmações
+      options:
+        - label: Removi dados pessoais, credenciais, tokens e conteúdo comunitário.
+          required: true
+        - label: Este relato não descreve uma vulnerabilidade explorável.
+          required: true

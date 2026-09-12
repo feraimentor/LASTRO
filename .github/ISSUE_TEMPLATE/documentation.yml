@@ -1,0 +1,12 @@
+name: Melhorar documentação
+description: Sugira correção ou explicação mais acessível.
+title: "[Docs]: "
+labels: ["documentation", "triage"]
+body:
+  - type: textarea
+    id: improvement
+    attributes:
+      label: O que precisa ficar mais claro?
+      description: Indique a página e sugira uma explicação acessível, sem dados reais.
+    validations:
+      required: true
